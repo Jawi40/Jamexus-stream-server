@@ -29,21 +29,25 @@ app.get('/stream/:mount', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'audio/mpeg',
     'Cache-Control': 'no-cache',
-    'Connection': 'close',
+    'Connection': 'close'
   });
 
   mount.listeners.add(res);
 
-  for (const chunk of mount.buffer) res.write(chunk);
+  for (const chunk of mount.buffer) {
+    res.write(chunk);
+  }
 
-  req.on('close', () => mount.listeners.delete(res));
+  req.on('close', () => {
+    mount.listeners.delete(res);
+  });
 });
 
 // METADATA endpoint
 app.post('/metadata/:mount', (req, res) => {
   const mount = getOrCreateMount(req.params.mount);
   mount.metadata = req.body;
-  res.status(200).json({ ok: true });
+  res.json({ ok: true });
 });
 
 // STATUS endpoint
@@ -53,9 +57,10 @@ app.get('/status/:mount', (req, res) => {
     mount: mount.name,
     listeners: mount.listeners.size,
     metadata: mount.metadata,
-    hasSource: !!mount.source,
+    hasSource: !!mount.source
   });
 });
 
-app.listen(8000, () => console.log('Server running on port 8000'));
-
+app.listen(8000, () => {
+  console.log('Server running on port 8000');
+});
